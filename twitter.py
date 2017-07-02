@@ -1,4 +1,5 @@
 from json import dumps
+from operator import itemgetter
 from os import mkdir, path
 from sys import argv
 
@@ -7,9 +8,9 @@ from TwitterAPI import TwitterAPI
 from keys import consumer_key, consumer_secret, access_key, access_secret
 
 high = []; mid = []; low = []
-low_threshold = 1
-mid_threshold = 5
-high_threshold = 10
+low_threshold = 10
+mid_threshold = 50
+high_threshold = 100
 
 def get_tweet_count(user):
     arguments = { 'screen_name': user, 'count': 1 }
@@ -49,6 +50,10 @@ def main():
         parse_tweets(tweets, max_id)
         max_id = tweets[-1]['id']
         tweet_count -= 200
+
+    low.sort(key=itemgetter('retweet_count'))
+    mid.sort(key=itemgetter('retweet_count'))
+    high.sort(key=itemgetter('retweet_count'))
 
     # Write the results
     print('low: {}, mid: {}, high: {}'.format(len(low), len(mid), len(high)))
