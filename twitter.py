@@ -30,7 +30,7 @@ def parse_tweets(tweets, max_id):
             continue
         if 'RT @' in tweet['text']:
             continue
-        if tweet['retweet_count'] == 0:
+        if tweet['retweet_count'] < low_threshold:
             continue
         if tweet['retweet_count'] >= high_threshold:
             high.append(tweet)
@@ -38,8 +38,7 @@ def parse_tweets(tweets, max_id):
         if tweet['retweet_count'] >= mid_threshold:
             mid.append(tweet)
             continue
-        if tweet['retweet_count'] >= low_threshold:
-            low.append(tweet)
+        low.append(tweet)
 
 def main():
     user = argv[1]
