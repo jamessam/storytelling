@@ -23,7 +23,7 @@ def parse_tweets(tweets, max_id):
     for tweet in tweets:
         if tweet['id'] == max_id:
             continue
-        if tweet['retweeted']:
+        if 'RT @' in tweet['text']:
             continue
         if tweet['retweet_count'] == 0:
             continue
@@ -34,7 +34,7 @@ def parse_tweets(tweets, max_id):
             mid.append(tweet)
             continue
         if tweet['retweet_count'] >= 1:
-            low.append(tweet)
+            low.append(tweet)            
 
 def main():
     user = 'jamessamsf'
