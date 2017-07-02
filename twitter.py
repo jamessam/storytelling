@@ -1,11 +1,15 @@
-import json
-import os
+from json import dumps
+from os import mkdir, path
+from sys import argv
 
 from TwitterAPI import TwitterAPI
 
 from keys import consumer_key, consumer_secret, access_key, access_secret
 
 high = []; mid = []; low = []
+low_threshold = 1
+mid_threshold = 5
+high_threshold = 10
 
 def get_tweet_count(user):
     arguments = { 'screen_name': user, 'count': 1 }
@@ -27,17 +31,17 @@ def parse_tweets(tweets, max_id):
             continue
         if tweet['retweet_count'] == 0:
             continue
-        if tweet['retweet_count'] >= 10:
+        if tweet['retweet_count'] >= high_threshold:
             high.append(tweet)
             continue
-        if tweet['retweet_count'] >= 5:
+        if tweet['retweet_count'] >= mid_threshold:
             mid.append(tweet)
             continue
-        if tweet['retweet_count'] >= 1:
-            low.append(tweet)            
+        if tweet['retweet_count'] >= low_threshold:
+            low.append(tweet)
 
 def main():
-    user = 'jamessamsf'
+    user = argv[1]
     tweet_count, max_id = get_tweet_count(user)
 
     while tweet_count > 0:
@@ -49,14 +53,14 @@ def main():
     # Write the results
     print('low: {}, mid: {}, high: {}'.format(len(low), len(mid), len(high)))
 
-    if not os.path.exists('results'):
-        os.mkdir('results')
-    with open('results/low.json', 'w') as low_file:
-        low_file.write(json.dumps(low, sort_keys=True, indent=4))
-    with open('results/mid.json', 'w') as mid_file:
-        mid_file.write(json.dumps(mid, sort_keys=True, indent=4))
-    with open('results/high.json', 'w') as high_file:
-        high_file.write(json.dumps(high, sort_keys=True, indent=4))
+    if not path.exists('results'):
+        mkdir('results')
+    with open('results/low_{}.json'.format(user), 'w') as low_file:
+        low_file.write(dumps(low, sort_keys=True, indent=4))
+    with open('results/mid_{}.json'.format(user), 'w') as mid_file:
+        mid_file.write(dumps(mid, sort_keys=True, indent=4))
+    with open('results/high_{}.json'.format(user), 'w') as high_file:
+        high_file.write(dumps(high, sort_keys=True, indent=4))
 
 if __name__ == '__main__':
     api = TwitterAPI(consumer_key, consumer_secret, access_key, access_secret)
